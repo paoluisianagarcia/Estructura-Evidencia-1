@@ -4,10 +4,30 @@ import time
 from rich import print
 from rich.table import Table
 
+def comprobar_precio(servicio):
+    while True:
+        try:
+            while True:
+                precio_del_servicio = float(input(f'Precio del servicio {servicio}: '))
+                if precio_del_servicio > 0:
+                    break
+                else:
+                    print('El precio tiene que ser mayor a 0\n')
+        except ValueError:
+            print('Ese no es un número válido. Intenta de nuevo\n')
+        except Exception as ex:
+            print(f'Ocurrió el error: {ex}. Intente de nuevo\n')
+        else:
+            break
+    
+    return precio_del_servicio
+
+
 class RegistrarNota:
     def __init__(self, folio):
 
         self.detalles_de_nota()
+        self.detalles_de_nota_a_str()
         self.retornar_datos()
         self.mostrar_nota(folio)
                 
@@ -18,32 +38,35 @@ class RegistrarNota:
         print('[#9999FF](Separados por comas)[#/9999FF]')
         self.servicios = input('Servicios a realizar: ')
 
-        while True:
-            try:
-                self.monto = 0
-                print('\n([#9999FF]En número entero o con decimales)[#/9999FF]')
-                for servicio in self.servicios.split(','):
-                    servicio = servicio.strip()
-                    self.monto += float(input(f'Precio del servicio {servicio}: '))
-            except ValueError:
-                print('Ese no es un número válido. Intenta de nuevo')
-            except Exception as ex:
-                print(f'Ocurrió el error: {ex}. Intente de nuevo') 
-            else:
-                if self.monto > 0:
-                    break
-                else:
-                    print('El precio tiene que ser mayor a 0')
+        self.monto_total = 0
+        self.servicios_y_precio = {}
+
+        print('\n([#9999FF]En número entero o con decimales, mayor a cero)[#/9999FF]')
+
+        for servicio in self.servicios.split(','):
+            servicio = servicio.strip()
+
+            precio_del_servicio = comprobar_precio(servicio)
+
+            self.servicios_y_precio[servicio] = precio_del_servicio
+            self.monto_total += precio_del_servicio
 
         self.nombre_del_cliente = input('\nNombre del cliente: ')
+
+    def detalles_de_nota_a_str(self):
+        self.detallesNota = '[#9999FF]|[/#9999FF] '
+        for k,v in self.servicios_y_precio.items():
+            self.detallesNota += f'{k}: {v} [#9999FF]|[/#9999FF] '
+        
 
     def retornar_datos(self):
 
         self.fecha_actual = str (datetime.date.today())
 
-        datos_recolectados = (self.fecha_actual, self.nombre_del_cliente, self.servicios, self.monto)
+        datos_recolectados = (self.fecha_actual, self.nombre_del_cliente, self.detallesNota)
 
         return datos_recolectados
+
 
     def mostrar_nota(self, folio):
         os.system('cls')
@@ -56,8 +79,8 @@ class RegistrarNota:
         nota.add_row('Folio', f'{folio}')
         nota.add_row('Fecha', f'{self.fecha_actual}')
         nota.add_row('Nombre del cliente', f'{self.nombre_del_cliente}')
-        nota.add_row('Servicio a realizar', f'{self.servicios}')
-        nota.add_row('Monto a pagar', f'{self.monto}')
+        nota.add_row('Monto a pagar', f'{self.monto_total}')
+        nota.add_row('Detalle de nota', f'{self.detallesNota}')
 
         print(nota, '\n')
     
