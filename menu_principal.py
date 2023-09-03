@@ -67,9 +67,8 @@ class Menu_principal:
             self.notas_canceladas[folio] = datos_registrados
 
     def consultas_y_reportes(self):
-        print(f'notas registradas: {self.notas_registradas}')
-        print(f'notas canceladas: {self.notas_canceladas}')
-        input()
+        pass
+
     def cancelar_una_nota(self):
         pass    
     def recuperar_una_nota(self):

@@ -22,9 +22,32 @@ def comprobar_precio(servicio):
     
     return precio_del_servicio
 
+def comprobar_fecha():
+    fecha_actual = datetime.date.today()
+    print('[#9999FF](No posterior a la fecha actual)[/#9999FF]')
+    while True:
+        try:
+            while True:
+                fecha_proporcionada = input('Fecha de la nota (dd/mm/aaaa): ')
+                fecha_de_nota = datetime.datetime.strptime(fecha_proporcionada,"%d/%m/%Y").date()
+                if fecha_de_nota <= fecha_actual:
+                        break
+                else:
+                    print('La fecha no puede ser posterior a la actual del sistema\n')
+        except ValueError:
+            print('Tipo de formato no válido. Intente de nuevo\n')
+        except Exception as error:
+            print(f'Ocurrió un problema: {error}\n')
+        else:
+            break
+    
+    return fecha_de_nota
+
 
 class RegistrarNota:
     def __init__(self, folio):
+
+        os.system('cls')
 
         self.detalles_de_nota()
         self.detalles_de_nota_a_str()
@@ -33,9 +56,11 @@ class RegistrarNota:
                 
 
     def detalles_de_nota(self):
-        os.system('cls')
         print('[#7AFFFF]--Registro de la Nota--[#/7AFFFF]\n')
-        print('[#9999FF](Separados por comas)[#/9999FF]')
+
+        self.fecha_de_nota = comprobar_fecha()
+
+        print('\n[#9999FF](Separados por comas)[#/9999FF]')
         self.servicios = input('Servicios a realizar: ')
 
         self.monto_total = 0
@@ -55,15 +80,13 @@ class RegistrarNota:
 
     def detalles_de_nota_a_str(self):
         self.detallesNota = '[#9999FF]|[/#9999FF] '
-        for k,v in self.servicios_y_precio.items():
-            self.detallesNota += f'{k}: {v} [#9999FF]|[/#9999FF] '
+        for servicio, precio in self.servicios_y_precio.items():
+            self.detallesNota += f'{servicio}: {precio} [#9999FF]|[/#9999FF] '
         
 
     def retornar_datos(self):
 
-        self.fecha_actual = str (datetime.date.today())
-
-        datos_recolectados = (self.fecha_actual, self.nombre_del_cliente, self.detallesNota)
+        datos_recolectados = (self.fecha_de_nota, self.nombre_del_cliente, self.detallesNota)
 
         return datos_recolectados
 
@@ -77,7 +100,7 @@ class RegistrarNota:
         nota.add_column("Datos", justify="left", style="white")
 
         nota.add_row('Folio', f'{folio}')
-        nota.add_row('Fecha', f'{self.fecha_actual}')
+        nota.add_row('Fecha', f'{self.fecha_de_nota}')
         nota.add_row('Nombre del cliente', f'{self.nombre_del_cliente}')
         nota.add_row('Monto a pagar', f'{self.monto_total}')
         nota.add_row('Detalle de nota', f'{self.detallesNota}')
